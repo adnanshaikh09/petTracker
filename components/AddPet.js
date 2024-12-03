@@ -10,11 +10,11 @@ import {
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
-const AddPet = ({ navigation, route }) => {
-  const { onAddPet } = route.params; // Extract the onAddPet function
+const AddPet = ({ navigation }) => {
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [age, setAge] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const db = getFirestore();
   const auth = getAuth();
@@ -26,6 +26,10 @@ const AddPet = ({ navigation, route }) => {
       return;
     }
 
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     try {
       const newPet = {
         name,
@@ -34,14 +38,14 @@ const AddPet = ({ navigation, route }) => {
         userId: user.uid,
       };
 
-      const docRef = await addDoc(collection(db, "pets"), newPet);
-
-      onAddPet({ id: docRef.id, ...newPet }); // Add the pet to the list in Home
+      await addDoc(collection(db, "pets"), newPet);
       Alert.alert("Success", "Pet added successfully!");
       navigation.goBack();
     } catch (error) {
       console.error("Error adding pet:", error);
       Alert.alert("Error", "An error occurred while adding the pet.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -68,8 +72,14 @@ const AddPet = ({ navigation, route }) => {
           value={age}
           onChangeText={setAge}
         />
-        <TouchableOpacity style={styles.button} onPress={handleAddPet}>
-          <Text style={styles.buttonText}>Add Pet</Text>
+        <TouchableOpacity
+          style={[styles.button, isSubmitting && { backgroundColor: "#ccc" }]}
+          onPress={handleAddPet}
+          disabled={isSubmitting}
+        >
+          <Text style={styles.buttonText}>
+            {isSubmitting ? "Adding..." : "Add Pet"}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

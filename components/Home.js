@@ -17,8 +17,8 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
-import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons"; // For the delete icon
+import { useNavigation } from "@react-navigation/native";
 import FeaturedContent from "./FeaturedContent"; // Import the FeaturedContent component
 
 const Home = () => {
@@ -138,9 +138,7 @@ const Home = () => {
       <TouchableOpacity
         style={styles.addButton}
         onPress={() =>
-          navigation.navigate("AddPet", {
-            onAddPet: (newPet) => setPets((prevPets) => [...prevPets, newPet]),
-          })
+          navigation.navigate("AddPet")
         }
       >
         <Text style={styles.addButtonText}>+</Text>
